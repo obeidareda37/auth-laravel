@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Auth\Events\Validated;
 use Illuminate\Http\Request;
@@ -22,12 +23,6 @@ class LoginController extends Controller
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return array
-     */
     public function store(LoginRequest $request)
     {
         $user = User::where('email', $request['email'])->first();
@@ -36,18 +31,24 @@ class LoginController extends Controller
             throw ValidationException::withMessages([
                 'password' => ['The password is not correct.'],
             ]);
+
         }
 
         $token = $user->createToken('token')->plainTextToken;
 
-        $response = [
+        return (new UserResource($user))->additional([
+            "meta"=>[
+                "token" => $token,
+            ]
+        ]);
+        /*$response = [
             'data' => $user,
             'meta' => [
                 'token' => $token
             ],
         ];
 
-        return response($response, 201);
+        return response($response, 201);*/
     }
 
     /**
