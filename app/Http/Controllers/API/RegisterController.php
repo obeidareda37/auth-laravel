@@ -5,8 +5,10 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\RegisterResource;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class RegisterController extends Controller
 {
@@ -20,12 +22,6 @@ class RegisterController extends Controller
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return RegisterResource
-     */
     public function store(RegisterRequest $request)
     {
         $user = User::create([
@@ -36,10 +32,7 @@ class RegisterController extends Controller
 
 //        $token = $user->createToken('token')->plainTextToken;
 
-        $response = [
-            'data' => $user,
-        ];
-        return response($response, 201);
+        return new UserResource($user);
     }
 
     /**
